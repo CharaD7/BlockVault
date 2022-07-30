@@ -23,7 +23,7 @@ export const main = Reach.App(() => {
     * The conditions of The Vault are satisfied
     */
     inherit : UInt,
-    getSwitch : Fun([], Bool),
+    getSwitch : Fun([Bool], Bool),
   });
 
   const B = Participant('Bob', {
@@ -62,7 +62,15 @@ export const main = Reach.App(() => {
   // transfer amount based on Alice's switch
   A.only(() => {
     const available = declassify(interact.getSwitch());
+    if (!available) {
+      exit();
+    }
   })
+
+  while (available) {
+
+  }
+
   A.publish(available)
 
   if(available) {

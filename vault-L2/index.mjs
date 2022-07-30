@@ -1,5 +1,6 @@
 import {loadStdlib} from '@reach-sh/stdlib';
 import * as backend from './build/index.main.mjs';
+import { ask, yesno } from '@reach-sh/stdlib/ask.mjs';
 
 const stdlib = loadStdlib(process.env);
 
@@ -34,7 +35,8 @@ await Promise.all([
     ...ICommon(),
     inherit : stdlib.parseCurrency(8000),
     getSwitch : () => {
-      const aliceSwitch = Math.floor(Math.random() * 2);
+      const isAliceAvailable = await ask(`Alice, are you here? y/n`, yesno);
+      const aliceSwitch = isAliceAvailable ? 1 : 0;
       console.log(`Alice's choice ${switches[aliceSwitch]}`);
 
       return ( aliceSwitch == 0 ? false : true );
@@ -46,7 +48,10 @@ await Promise.all([
     ...stdlib.hasRandom,
     ...ICommon(),
     tNa : (amount) => {
-      console.log(`Bob accepts terms and conditions with ${stdlib.formatCurrency(amount)} ALGOs`);
+      const agrees = ask(`Bob, do you accept the terms and conditions with ${stdlib.formatCurrency(amount)} ALGOs? y/n`, yesno);
+      if (!agrees) {
+        return false;
+      }
       return true;
     }
   }),
